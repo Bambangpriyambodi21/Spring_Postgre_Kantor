@@ -1,10 +1,12 @@
 package com.kantor.kantor.service.impl;
 
 import com.kantor.kantor.entity.Karyawan;
+import com.kantor.kantor.entity.UserCredential;
 import com.kantor.kantor.model.request.KaryawanRequest;
 import com.kantor.kantor.model.request.SearchKarywanRequest;
 import com.kantor.kantor.model.response.KaryawanResponse;
 import com.kantor.kantor.repository.KaryawanRepository;
+import com.kantor.kantor.repository.UserCredentialRepository;
 import com.kantor.kantor.service.KaryawanService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +17,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class KaryawanServiceImpl implements KaryawanService {
     private final KaryawanRepository karyawanRepository;
+    private final UserCredentialRepository userCredentialRepository;
 
     private KaryawanResponse convert(Karyawan karyawan){
         KaryawanResponse karyawanResponse = KaryawanResponse.builder()
@@ -33,11 +37,13 @@ public class KaryawanServiceImpl implements KaryawanService {
 
     @Override
     public KaryawanResponse create(KaryawanRequest karyawanRequest) {
+        Optional<UserCredential> byId = userCredentialRepository.findById(Long.valueOf(karyawanRequest.getId_user()));
         Karyawan karyawan = Karyawan.builder()
                 .nama(karyawanRequest.getNama())
                 .departemen(karyawanRequest.getDepartemen())
                 .jabatan(karyawanRequest.getJabatan())
                 .gaji(karyawanRequest.getGaji())
+                .userCredential(byId.get())
                 .build();
         Karyawan save = karyawanRepository.save(karyawan);
         return convert(save);
@@ -68,12 +74,14 @@ public class KaryawanServiceImpl implements KaryawanService {
 
     @Override
     public KaryawanResponse update(Karyawan karyawan) {
+        Optional<UserCredential> byId = userCredentialRepository.findById(karyawan.getUserCredential().getId());
         Karyawan karyawanUpdate = Karyawan.builder()
                 .id(karyawan.getId())
                 .nama(karyawan.getNama())
                 .departemen(karyawan.getDepartemen())
                 .jabatan(karyawan.getJabatan())
                 .gaji(karyawan.getGaji())
+                .userCredential(byId.get())
                 .build();
         Karyawan save = karyawanRepository.save(karyawan);
         return convert(save);

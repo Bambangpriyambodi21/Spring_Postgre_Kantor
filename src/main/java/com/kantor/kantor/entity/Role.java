@@ -1,5 +1,6 @@
 package com.kantor.kantor.entity;
 
+import com.kantor.kantor.constant.ERole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,16 +9,12 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity(name = "karyawan")
-public class Karyawan {
+@Entity(name = "m_role")
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nama;
-    private String jabatan;
-    private String departemen;
-    private Long gaji;
 
-    @OneToOne
-    private UserCredential userCredential;
+    @Enumerated(EnumType.STRING)
+    private ERole role;
 }

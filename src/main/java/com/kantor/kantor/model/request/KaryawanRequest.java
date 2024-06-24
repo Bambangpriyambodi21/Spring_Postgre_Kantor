@@ -12,4 +12,5 @@ public class KaryawanRequest {
     private String jabatan;
     private String departemen;
     private Long gaji;
+    private String id_user;
 }
