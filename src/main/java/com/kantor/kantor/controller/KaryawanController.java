@@ -2,6 +2,7 @@ package com.kantor.kantor.controller;
 
 import com.kantor.kantor.entity.Karyawan;
 import com.kantor.kantor.model.request.KaryawanRequest;
+import com.kantor.kantor.model.request.SearchKarywanRequest;
 import com.kantor.kantor.model.response.KaryawanResponse;
 import com.kantor.kantor.service.KaryawanService;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,15 @@ public class KaryawanController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAll(){
-        List<KaryawanResponse> all = karyawanService.getAll();
+    public ResponseEntity<?> getAll(@RequestParam(required = false) String nama,
+                                    @RequestParam(required = false, defaultValue = "0") Integer halaman,
+                                    @RequestParam(required = false, defaultValue = "10") Integer ukuran){
+        SearchKarywanRequest searchKarywanRequest = SearchKarywanRequest.builder()
+                .nama(nama)
+                .halaman(halaman)
+                .ukuran(ukuran)
+                .build();
+        List<KaryawanResponse> all = karyawanService.getAll(searchKarywanRequest);
         return ResponseEntity.ok(all);
     }
 

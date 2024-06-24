@@ -2,14 +2,20 @@ package com.kantor.kantor.service.impl;
 
 import com.kantor.kantor.entity.Karyawan;
 import com.kantor.kantor.model.request.KaryawanRequest;
+import com.kantor.kantor.model.request.SearchKarywanRequest;
 import com.kantor.kantor.model.response.KaryawanResponse;
 import com.kantor.kantor.repository.KaryawanRepository;
 import com.kantor.kantor.service.KaryawanService;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,13 +44,26 @@ public class KaryawanServiceImpl implements KaryawanService {
     }
 
     @Override
-    public List<KaryawanResponse> getAll() {
-        List<Karyawan> all = karyawanRepository.findAll();
-        List<KaryawanResponse> karyawanResponses = new ArrayList<>();
-        for (int i =0; i<all.size();i++){
-            karyawanResponses.add(convert(all.get(i)));
-        }
-        return karyawanResponses;
+    public List<KaryawanResponse> getAll(SearchKarywanRequest searchKarywanRequest) {
+        PageRequest pageRequest = PageRequest.of(searchKarywanRequest.getHalaman(), searchKarywanRequest.getUkuran());
+        Specification<Karyawan> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (searchKarywanRequest.getNama()!=null){
+                Predicate predicate = criteriaBuilder.like(root.get("nama"), "%"+searchKarywanRequest.getNama()+"%");
+                predicates.add(predicate);
+            }
+
+            return query.where(predicates.toArray(new jakarta.persistence.criteria.Predicate[]{})).getRestriction();
+        };
+        Page<Karyawan> all = karyawanRepository.findAll(specification, pageRequest);
+        List<KaryawanResponse> karyawanResponses = all.getContent().stream()
+                .map(item -> KaryawanResponse.builder()
+                        .nama(item.getNama())
+                        .jabatan(item.getJabatan())
+                        .departemen(item.getDepartemen())
+                        .build())
+                .collect(Collectors.toList());
+        return new ArrayList<>(karyawanResponses);
     }
 
     @Override
