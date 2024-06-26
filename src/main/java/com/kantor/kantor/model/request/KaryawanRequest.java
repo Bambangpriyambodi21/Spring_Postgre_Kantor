@@ -8,9 +8,10 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class KaryawanRequest {
+    private Long id;
     private String nama;
     private String jabatan;
     private String departemen;
     private Long gaji;
-    private String id_user;
+    private Long id_user;
 }

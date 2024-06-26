@@ -38,7 +38,7 @@ public class KaryawanController {
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody Karyawan karyawan){
+    public ResponseEntity<?> update(@RequestBody KaryawanRequest karyawan){
         KaryawanResponse update = karyawanService.update(karyawan);
         return ResponseEntity.ok(update);
     }

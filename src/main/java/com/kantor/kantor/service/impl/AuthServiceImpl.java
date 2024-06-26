@@ -69,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
         userCredentialRepository.saveAndFlush(userCredential);
 
         KaryawanRequest karyawan = KaryawanRequest.builder()
-                .id_user(userCredential.getId().toString())
+                .id_user(userCredential.getId())
                 .build();
         karyawanService.create(karyawan);
         List<String> list = userCredential.getRoles().stream().map(role1 -> role1.getRole().name()).toList();

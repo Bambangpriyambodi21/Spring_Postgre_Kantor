@@ -73,17 +73,18 @@ public class KaryawanServiceImpl implements KaryawanService {
     }
 
     @Override
-    public KaryawanResponse update(Karyawan karyawan) {
-        Optional<UserCredential> byId = userCredentialRepository.findById(karyawan.getUserCredential().getId());
+    public KaryawanResponse update(KaryawanRequest karyawan) {
+        Optional<UserCredential> byId = userCredentialRepository.findById(karyawan.getId());
+        Optional<UserCredential> byId1 = userCredentialRepository.findById(karyawan.getId_user());
         Karyawan karyawanUpdate = Karyawan.builder()
-                .id(karyawan.getId())
+                .id(byId.get().getId())
                 .nama(karyawan.getNama())
                 .departemen(karyawan.getDepartemen())
                 .jabatan(karyawan.getJabatan())
                 .gaji(karyawan.getGaji())
-                .userCredential(byId.get())
+                .userCredential(byId1.get())
                 .build();
-        Karyawan save = karyawanRepository.save(karyawan);
+        Karyawan save = karyawanRepository.save(karyawanUpdate);
         return convert(save);
     }
 
